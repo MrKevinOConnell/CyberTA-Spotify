@@ -1,11 +1,26 @@
 /* eslint-disable no-console */
 const moment = require('moment');
 
+
+
+
+
 const ACK = '👍';
 const NAK = '🛑';
 const WARN = '⚠️';
 
-const { OFFICE_HOURS, TA_CHANNEL } = process.env;
+var token = {
+  access_token:""
+};
+
+const { OFFICE_HOURS, TA_CHANNEL, CLIENT_ID, CLIENT_SECRET } = process.env;
+
+const DiscordOauth2 = require("discord-oauth2");
+const oauth = new DiscordOauth2({
+    clientId: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
+    redirectUri: "https://ta-bot-spotify.herokuapp.com",
+});
 
 const queue = [];
 const dequeued = [];
@@ -101,6 +116,29 @@ exports.cmds = {
     }
   },
 
+   /**
+   * If a user needs to leave the queue they can use the !leave command.
+   * This will remove them if they are in the queue, otherwise NAK.
+   *
+   * DEV Note: This potentially could be where the TA-leave functionality goes
+   *
+   * @param {Object} message - The Discord message object to interact with.
+   */
+  '!song': (message) => {
+    if (OFFICE_HOURS === message.channel.id) {
+oauth.tokenRequest({
+    // clientId, clientSecret and redirectUri are omitted, as they were already set on the class constructor
+    grantType: "authorization_code",
+    code: "https://discord.com/api/oauth2/authorize?client_id=818695837315104829&redirect_uri=https%3A%2F%2Fta-bot-spotify.herokuapp.com&response_type=code&scope=connections",
+    scope: "connections",
+
+}).then((data) => token.access_token = data.access_token)
+message.react(ACK);
+message.reply(token.access_token);
+    }
+  },
+
+  
   /**
    * TA's can use this command to empty the queue.
    *
