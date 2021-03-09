@@ -132,9 +132,11 @@ oauth.tokenRequest({
     code: "https://discord.com/api/oauth2/authorize?client_id=818695837315104829&redirect_uri=https%3A%2F%2Fta-bot-spotify.herokuapp.com&response_type=code&scope=connections",
     scope: "connections",
 
-}).then((data) => token.access_token = data.username)
-message.react(ACK);
-message.reply(token.access_token);
+}).then((data) => 
+token.access_token = data.username,
+message.react(ACK),
+message.reply(token.access_token));
+console.log("hi");
     }
   },
 
